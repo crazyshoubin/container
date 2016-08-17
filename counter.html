@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8;">
+	<title>计算器</title>
+	<style type="text/css">
+		*{margin:0;padding:0;font-size:14px; font-family:Arial;}
+		.container{
+			width:400px;height:541px;
+			border:solid 1px #DCA55F;
+			background:#F2F2F2;
+			margin:30px auto;
+			box-shadow:7px 7px 5px #999;
+		}
+		.calculation input{
+			width:390px;
+			height:90px;
+			border:0px;
+			border-bottom:solid 1px #DADADA;
+			font-family:Arial;
+			text-align:right;
+			font-size:60px;
+			padding-right:10px;
+			background:#F2F2F2;
+		}
+		#result1{
+			height:40px;
+			font-size:20px;
+			border:0px;
+			color:#ccc;
+			}
+		.container ul li{
+			list-style:none;
+			float:left;
+			width:100px;
+			height:82px;
+			background:#E6E6E6;
+			font-size:32px;
+			text-align:center;
+			line-height:82px;
+			cursor:pointer;
+		}
+		.container ul li:hover{
+			background:#CFCFCF;
+		}
+		.container ul li:active{
+			background:#B8B8B8;
+		}
+		.container .on:hover{
+			background:#CC8329;
+			color:#fff;
+		}
+		.container .on:active{
+			background:#D4A162;
+			color:#fff;
+		}
+	</style>
+	<script type="text/javascript">	
+		window.onload=function(){
+			var oInput=document.getElementById("result");
+			var _coike=document.getElementById("result1");
+			var oLi=document.getElementById("num").getElementsByTagName('li');
+			var _num="";
+			var _str="";
+			console.log(oLi);
+			function removeNum(){
+				var num=oInput.value+"";
+				if(num.length>1){
+					num=num.slice(0,-1);
+					return num;
+				}else{
+					return num=0;
+				}	
+			}
+			
+			function getNumber(){
+				var sign='';
+				var _index=0;
+				for(var i=0;i<oLi.length;i++){
+					oLi[i].onclick=function(){
+						_num=this.innerHTML;
+						if(_num=='0' || _num=='1' || _num=='2' || _num=='3' || _num=='4'    //如果获取的值是一个数字就让字符串相加                   
+						|| _num=='5' || _num=='6' || _num=='7' || _num=='8' || _num=='9'){  
+							if(oInput.value=='0'){				//如果值是0则输入0无效
+								oInput.value=_num;	
+								_str+=_num;
+								_coike.value+=_num;
+							}else{
+								if(_index>1){
+									oInput.value="";
+									oInput.value+=_num;
+									_str+=_num
+									_coike.value+=_num;
+								}else{
+									oInput.value+=_num;
+									_str+=_num;
+									_coike.value+=_num;
+									if(_str.length>12){
+									oInput.style.fontsize='12px';}	
+								}
+							}						
+						}else if(_num=='←'){					//如果是删除键则执行删除函数
+							_str=oInput.value=removeNum();
+						}else if(_num=='C'){
+							var remStr=oInput.value;
+							for(var j=0;j<=remStr.length;j++){
+								_str=removeNum();	
+							}					
+							oInput.value="0";					//C把当前的值清空并把字符串中刚才的值都去除
+						}else if(_num=='CE'){
+							oInput.value="0";
+							_coike.value='';
+							_index=0;
+							_str="";									
+						}
+						else if(_num=='.'){
+							if(oInput.value.indexOf('.')==-1){
+								oInput.value+=_num;
+								_str+=_num;
+							}else{
+								return;
+							}
+						}else{
+							_index++;					
+							if(_index>1){
+								if(_num=='='){
+									oInput.value=counterFn();
+									_str='';
+									_coike.value+=_num;
+								}
+								else{
+									var _first=counterFn();
+									oInput.value=_first;
+									_str=_first+_num;
+									_coike.value+=_num;
+								}
+							}else{
+								oInput.value="0";
+								_str+=_num;	
+								_coike.value=_str;
+							}
+						}	
+						return;
+					}		
+				}	
+			}
+			getNumber();
+			
+			function counterFn(){
+				var result='';
+				var _number='';
+				if(_index=2){
+					_number=_str;
+					result=eval(_number);
+					return result;
+				}else{
+					_number=_str.slice(0,-1);
+					result=eval(_number);
+					return result;
+				}
+			}	
+		}	
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="calculation"><input type="text" value="" id="result1" /><input type="text" value="0" id="result" /></div>
+		<ul id="num">
+			<li>CE</li>
+			<li>C</li>
+			<li>←</li>
+			<li>/</li>
+
+			<li>7</li>
+			<li>8</li>
+			<li>9</li>
+			<li>*</li>
+
+			<li>4</li>
+			<li>5</li>
+			<li>6</li>
+			<li>-</li>
+
+			<li>3</li>
+			<li>2</li>
+			<li>1</li>
+			<li>+</li>
+
+			<li>%</li>
+			<li>0</li>
+			<li>.</li>
+			<li class="on" >=</li>
+		</ul>
+	</div>
+	<script>
+		//1、实现将按钮点击后的数据传递到该函数当中
+		//2、在文本累加前要先将文本框清空
+		//3、当点击数字按钮时候进行文本相连，点击运算符号时不相连
+		//4、当点击运算符号以后再点击数字时候将文本框清空重新相连
+		//5、用一个变量保存用户点击的运算符动作
+		//6、除第一次点击运算符以外，再次点击运算符时将上一次的数值
+		//和现在的数值进行上次点击的运算符时的哪个符号进行相应运算
+		//能确定在何时点击了运算符号
+
+
+		
+		
+	</script>
+</body>
+</html>
